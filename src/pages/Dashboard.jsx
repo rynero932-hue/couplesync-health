@@ -9,7 +9,8 @@ import {
   Scale, 
   ChevronRight,
   TrendingUp,
-  Quote
+  Quote,
+  Heart
 } from 'lucide-react';
 
 const Dashboard = ({ user }) => {
