@@ -1,54 +1,79 @@
 // src/screens/workout.js
 
-import { state }       from '../state.js';
-import { go }          from '../ui/nav.js';
+import { state }            from '../state.js';
+import { go }               from '../ui/nav.js';
 import { showToast, fbBar } from '../ui/toast.js';
-import { WORKOUT_PLANS }   from '../data/workouts.js';
-import { saveWorkout } from '../firebase/firestore.js';
+import { WORKOUT_PLANS }    from '../data/workouts.js';
+
+async function persistWorkout(role, title, durationSec) {
+  try {
+    const { saveWorkout } = await import('../firebase/firestore.js');
+    await saveWorkout(role, title, durationSec);
+  } catch (e) { console.warn('[workout] offline:', e.message); }
+}
 
 export function setWorkoutGender(gender) {
   state.workoutGender = gender;
-  document.getElementById('wkg-m').className = 'wkt-btn2 m' + (gender === 'm' ? ' on' : '');
-  document.getElementById('wkg-f').className = 'wkt-btn2 f' + (gender === 'f' ? ' on' : '');
+  const mBtn = document.getElementById('wkg-m');
+  const fBtn = document.getElementById('wkg-f');
+  if (mBtn) mBtn.className = 'wkt-btn2 m' + (gender === 'm' ? ' on' : '');
+  if (fBtn) fBtn.className = 'wkt-btn2 f' + (gender === 'f' ? ' on' : '');
   renderWorkout();
 }
 
 export function renderWorkout() {
   const plan = WORKOUT_PLANS[state.workoutGender];
+  if (!plan) return;
 
-  document.getElementById('wk-title').textContent = plan.title;
-  document.getElementById('wk-desc').textContent  = plan.desc;
-  document.getElementById('wk-b1').textContent    = plan.badge1;
-  document.getElementById('wk-b2').textContent    = plan.badge2;
-  document.getElementById('wk-hero').style.background = plan.gradient;
+  const titleEl = document.getElementById('wk-title');
+  const descEl  = document.getElementById('wk-desc');
+  const b1El    = document.getElementById('wk-b1');
+  const b2El    = document.getElementById('wk-b2');
+  const heroEl  = document.getElementById('wk-hero');
+  const listEl  = document.getElementById('wk-exlist');
+  const startBtn = document.getElementById('wk-start-btn');
 
-  const list = document.getElementById('wk-exlist');
-  list.innerHTML = '<div class="sect">Latihan Hari Ini</div>' +
-    plan.exercises.map((e, i) => `
-      <div class="ex-row">
-        <div class="ex-n" style="background:${plan.accentLight};color:${plan.accentColor}">${i + 1}</div>
-        <div class="ex-info" style="flex:1">
-          <span>${e.name}</span>
-          <p>${e.detail}</p>
-        </div>
-        <span class="ex-chip" style="background:${plan.accentLight};color:${plan.accentColor}">
-          ${e.detail.split(' ')[0]}
-        </span>
-      </div>`).join('');
+  if (titleEl)  titleEl.textContent = plan.title;
+  if (descEl)   descEl.textContent  = plan.desc;
+  if (b1El)     b1El.textContent    = plan.badge1;
+  if (b2El)     b2El.textContent    = plan.badge2;
+  if (heroEl)   heroEl.style.background = plan.gradient;
 
-  const btn = document.getElementById('wk-start-btn');
-  btn.className = 'btn-primary' + (state.workoutGender === 'f' ? ' btn-pink' : '');
+  if (listEl) {
+    listEl.innerHTML = '<div class="sect">Latihan Hari Ini</div>' +
+      plan.exercises.map((e, i) => `
+        <div class="ex-row">
+          <div class="ex-n" style="background:${plan.accentLight};color:${plan.accentColor}">${i + 1}</div>
+          <div class="ex-info" style="flex:1">
+            <span>${e.name}</span><p>${e.detail}</p>
+          </div>
+          <span class="ex-chip" style="background:${plan.accentLight};color:${plan.accentColor}">
+            ${e.detail.split(' ')[0]}
+          </span>
+        </div>`).join('');
+  }
+
+  if (startBtn) {
+    startBtn.className = 'btn-primary' + (state.workoutGender === 'f' ? ' btn-pink' : '');
+  }
 }
 
 export function startTracking() {
   const plan = WORKOUT_PLANS[state.workoutGender];
-  document.getElementById('wkt-sname').textContent   = plan.title;
-  document.getElementById('wkt-ex-n').textContent    = plan.exercises[0].name;
-  document.getElementById('wkt-ex-r').textContent    = plan.exercises[0].detail;
-  document.getElementById('wkt-ring-txt').textContent = plan.exercises[0].detail.split(' × ')[0] || '1';
-  if (plan.exercises[1]) {
-    document.getElementById('wkt-next-n').textContent =
-      `${plan.exercises[1].name} — ${plan.exercises[1].detail}`;
+  if (!plan) return;
+
+  const snameEl  = document.getElementById('wkt-sname');
+  const exNEl    = document.getElementById('wkt-ex-n');
+  const exREl    = document.getElementById('wkt-ex-r');
+  const ringTxt  = document.getElementById('wkt-ring-txt');
+  const nextNEl  = document.getElementById('wkt-next-n');
+
+  if (snameEl) snameEl.textContent   = plan.title;
+  if (exNEl)   exNEl.textContent     = plan.exercises[0].name;
+  if (exREl)   exREl.textContent     = plan.exercises[0].detail;
+  if (ringTxt) ringTxt.textContent   = plan.exercises[0].detail.split(' × ')[0] || '1';
+  if (nextNEl && plan.exercises[1]) {
+    nextNEl.textContent = `${plan.exercises[1].name} — ${plan.exercises[1].detail}`;
   }
 
   state.timerSec  = 0;
@@ -60,8 +85,8 @@ export function startTracking() {
       state.timerSec++;
       const m = String(Math.floor(state.timerSec / 60)).padStart(2, '0');
       const s = String(state.timerSec % 60).padStart(2, '0');
-      const el = document.getElementById('wkt-clock');
-      if (el) el.textContent = `${m}:${s}`;
+      const clockEl = document.getElementById('wkt-clock');
+      if (clockEl) clockEl.textContent = `${m}:${s}`;
     }
   }, 1000);
 
@@ -76,33 +101,30 @@ export function stopTracking() {
 
 export function togglePause() {
   state.isPaused = !state.isPaused;
-  const ic  = document.getElementById('pause-ic');
-  const txt = document.getElementById('pause-txt');
-  if (!ic || !txt) return;
-
+  const icEl  = document.getElementById('pause-ic');
+  const txtEl = document.getElementById('pause-txt');
+  if (!icEl || !txtEl) return;
   if (state.isPaused) {
-    ic.innerHTML    = '<polygon points="5 3 19 12 5 21 5 3" fill="#7C3AED"/>';
-    txt.textContent = 'Lanjut';
+    icEl.innerHTML   = '<polygon points="5 3 19 12 5 21 5 3" fill="#7C3AED"/>';
+    txtEl.textContent = 'Lanjut';
   } else {
-    ic.innerHTML    = '<rect x="6" y="4" width="4" height="16" rx="1" fill="#7C3AED"/><rect x="14" y="4" width="4" height="16" rx="1" fill="#7C3AED"/>';
-    txt.textContent = 'Pause';
+    icEl.innerHTML   = '<rect x="6" y="4" width="4" height="16" rx="1" fill="#7C3AED"/><rect x="14" y="4" width="4" height="16" rx="1" fill="#7C3AED"/>';
+    txtEl.textContent = 'Pause';
   }
 }
 
 export async function finishWorkout() {
   clearInterval(state.timerInterval);
   state.timerInterval = null;
-
   fbBar('Menyimpan workout…');
   try {
     const plan = WORKOUT_PLANS[state.workoutGender];
-    await saveWorkout(state.currentUser, plan.title, state.timerSec);
+    await persistWorkout(state.currentUser, plan.title, state.timerSec);
     fbBar('Workout tersimpan! 🎉', true);
   } catch (err) {
     console.error('[finishWorkout]', err);
     fbBar('Tersimpan offline', null);
   }
-
   showToast('🎉 Workout selesai! +20 XP');
   setTimeout(() => go('s-home'), 600);
 }

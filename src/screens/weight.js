@@ -1,15 +1,21 @@
 // src/screens/weight.js
 
-import { state }                   from '../state.js';
-import { showToast, fbBar }        from '../ui/toast.js';
-import { updateWeightChart }       from '../ui/charts.js';
-import { saveWeight, getLatestWeight } from '../firebase/firestore.js';
+import { state }             from '../state.js';
+import { showToast, fbBar }  from '../ui/toast.js';
+import { updateWeightChart } from '../ui/charts.js';
+
+async function persistWeight(role, kg) {
+  const { saveWeight } = await import('../firebase/firestore.js');
+  return saveWeight(role, kg); // throws EXTREME_CHANGE if needed
+}
 
 export function setWeightTab(tab) {
   state.weightTab = tab;
 
-  document.getElementById('wt-me').className  = 'wt-tab' + (tab === 'me'  ? ' on' : '');
-  document.getElementById('wt-dia').className = 'wt-tab' + (tab === 'dia' ? ' on' : '');
+  const meEl  = document.getElementById('wt-me');
+  const diaEl = document.getElementById('wt-dia');
+  if (meEl)  meEl.className  = 'wt-tab' + (tab === 'me'  ? ' on' : '');
+  if (diaEl) diaEl.className = 'wt-tab' + (tab === 'dia' ? ' on' : '');
 
   const role = tab === 'me'
     ? state.currentUser
@@ -32,7 +38,8 @@ export function setWeightTab(tab) {
 }
 
 export async function recordWeight() {
-  const v = parseFloat(document.getElementById('w-input').value);
+  const inputEl = document.getElementById('w-input');
+  const v       = parseFloat(inputEl?.value || '');
 
   if (!v || v < 30 || v > 200) {
     showToast('Masukkan berat yang valid (30–200 kg)');
@@ -45,24 +52,17 @@ export async function recordWeight() {
 
   fbBar('Menyimpan berat…');
   try {
-    await saveWeight(role, v);
+    await persistWeight(role, v);
 
-    // Update local cache
     state.weightData[role].push(v);
     state.weightData[role].shift();
-    document.getElementById('w-input').value = '';
-
-    // Refresh weight tab display
+    if (inputEl) inputEl.value = '';
     setWeightTab(state.weightTab);
 
-    // Update home cards
-    if (role === 'm') {
-      const el = document.getElementById('hm-wm');
-      if (el) el.textContent = `${v} kg`;
-    } else {
-      const el = document.getElementById('hm-wf');
-      if (el) el.textContent = `${v} kg`;
-    }
+    const homeEl = role === 'm'
+      ? document.getElementById('hm-wm')
+      : document.getElementById('hm-wf');
+    if (homeEl) homeEl.textContent = `${v} kg`;
 
     showToast('✓ Berat berhasil dicatat! 👍');
     fbBar('Berat tersimpan ✓', true);

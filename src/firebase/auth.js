@@ -5,7 +5,7 @@ import {
   signOut,
   onAuthStateChanged,
 } from 'firebase/auth';
-import { auth }  from './config.js';
+import { auth } from './config.js';
 import { loadDashboard, startChatListener, startPartnerListener } from './firestore.js';
 
 const EMAILS = {
@@ -23,7 +23,7 @@ export async function firebaseLogout() {
   return signOut(auth);
 }
 
-/** Listen to auth state — call once on app start */
+/** Listen to auth state — call once on app boot */
 export function initAuthListener(onLogin) {
   onAuthStateChanged(auth, async (user) => {
     if (!user) return;
