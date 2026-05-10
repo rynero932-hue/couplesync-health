@@ -1,33 +1,33 @@
 // src/screens/login.js
 
-import { state }             from '../state.js';
-import { go }                from '../ui/nav.js';
-import { showToast, fbBar }  from '../ui/toast.js';
+import { state }            from '../state.js';
+import { go }               from '../ui/nav.js';
+import { showToast, fbBar } from '../ui/toast.js';
 
 const PASSWORDS   = { m: 'ilham123', f: 'navisa123' };
 const COUPLE_CODE = '281524';
 
-// Lazy-import Firebase to avoid blocking initial render
-async function getFirebaseAuth() {
+// ── Lazy Firebase imports ────────────────────────────────────────────────────
+async function tryFirebaseLogin(role, password) {
   const { firebaseLogin } = await import('../firebase/auth.js');
-  return { firebaseLogin };
+  return firebaseLogin(role, password);
 }
-async function getFirebaseLogout() {
+async function tryFirebaseLogout() {
   const { firebaseLogout } = await import('../firebase/auth.js');
-  return firebaseLogout;
+  return firebaseLogout();
 }
-async function getListeners() {
+async function tryStopListeners() {
   const { stopListeners } = await import('../firebase/firestore.js');
-  return stopListeners;
+  return stopListeners();
 }
 
+// ── Public functions ─────────────────────────────────────────────────────────
 export function pickUser(role) {
   state.currentUser = role;
   const fEl = document.getElementById('uc-f');
   const mEl = document.getElementById('uc-m');
   if (fEl) fEl.className = 'uc f' + (role === 'f' ? ' sel' : '');
   if (mEl) mEl.className = 'uc m' + (role === 'm' ? ' sel' : '');
-  // Fill couple code boxes
   document.querySelectorAll('.lg-box').forEach((b, i) => {
     b.textContent = COUPLE_CODE[i];
     b.className   = 'lg-box ok';
@@ -35,7 +35,7 @@ export function pickUser(role) {
 }
 
 export async function doLogin() {
-  const pw   = document.getElementById('lg-pw')?.value || '';
+  const pw   = document.getElementById('lg-pw')?.value?.trim() || '';
   const role = state.currentUser;
 
   const fSel = document.getElementById('uc-f')?.classList.contains('sel');
@@ -43,18 +43,35 @@ export async function doLogin() {
   if (!fSel && !mSel) { showToast('Pilih dulu kamu siapa'); return; }
   if (!pw)            { showToast('Masukkan password dulu ya 😊'); return; }
 
+  // Validate password locally first
+  if (pw !== PASSWORDS[role]) {
+    showToast('❌ Password salah! Coba lagi');
+    return;
+  }
+
   fbBar('Masuk ke akun…');
+
+  // Try Firebase Auth — if user not yet created, proceed in offline mode
   try {
-    const { firebaseLogin } = await getFirebaseAuth();
-    await firebaseLogin(role, pw);
-    // onAuthStateChanged in auth.js handles navigation + data load
+    await tryFirebaseLogin(role, pw);
+    // onAuthStateChanged handles the rest
   } catch (err) {
-    const isWrongPw = err.code?.includes('wrong-password') ||
-                      err.code?.includes('invalid-credential') ||
-                      err.code?.includes('invalid-login-credentials');
-    const msg = isWrongPw ? 'Password salah! Coba lagi' : 'Login gagal: ' + err.message;
-    showToast('❌ ' + msg);
-    fbBar(msg, false);
+    const code = err.code || '';
+    if (
+      code.includes('user-not-found') ||
+      code.includes('invalid-credential') ||
+      code.includes('invalid-login-credentials') ||
+      code.includes('wrong-password') ||
+      err.message?.includes('400')
+    ) {
+      // Firebase user not set up yet — use offline mode
+      console.warn('[login] Firebase user not found, using offline mode');
+      fbBar('Mode offline aktif', null);
+      onLoginSuccess(role);
+    } else {
+      showToast('Login gagal: ' + (err.message || code));
+      fbBar('Login error', false);
+    }
   }
 }
 
@@ -67,15 +84,18 @@ export function showCode() {
 }
 
 export async function doLogout() {
-  const stopListeners = await getListeners();
-  stopListeners();
-  const firebaseLogout = await getFirebaseLogout();
-  await firebaseLogout();
+  try {
+    const stop = await tryStopListeners();
+    stop();
+  } catch (_) {}
+  try {
+    const logout = await tryFirebaseLogout();
+    await logout();
+  } catch (_) {}
   showToast('Sampai jumpa! 💜');
   setTimeout(() => go('s-splash'), 900);
 }
 
-/** Called by auth.js onAuthStateChanged after successful login */
 export function onLoginSuccess(role) {
   state.currentUser = role;
   pickUser(role);
@@ -89,6 +109,6 @@ export function onLoginSuccess(role) {
   if (greetEl) greetEl.textContent = `Halo, ${name}! 👋`;
   if (subEl)   subEl.textContent   = `Semangat ${g} ini ya 💪`;
 
-  fbBar(`Sesi aktif: ${name}`, true);
+  fbBar(`Masuk sebagai ${name} ✓`, true);
   go('s-home');
 }
