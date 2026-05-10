@@ -1,14 +1,636 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CoupleSync - Tumbuh Sehat Bersama</title>
-    <meta name="description" content="Aplikasi private khusus untuk pasangan LDR yang ingin membangun rutinitas positif, hidup sehat, dan menjalani progress diet bersama secara transparan." />
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+  <meta name="theme-color" content="#7C3AED">
+  <meta name="description" content="Better Together — Aplikasi kesehatan khusus untuk Ilham & Navisa">
+  <title>Better Together 💜</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/styles/main.css">
+</head>
+<body>
+
+<div class="shell" id="app">
+
+<!-- ═══════════════════════════════════════════════
+     SPLASH
+════════════════════════════════════════════════ -->
+<div id="s-splash" class="screen on">
+  <div class="sp-logo">
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="rgba(255,255,255,.9)"/>
+    </svg>
+  </div>
+  <div class="sp-title">Better Together</div>
+  <div class="sp-sub">Aplikasi khusus untuk kamu berdua.<br>Saling dukung, saling lihat progres. 💜</div>
+  <div class="sp-pair">
+    <div><div class="sp-av f">N</div><div class="sp-name">Navisa</div></div>
+    <div class="sp-heart">💜</div>
+    <div><div class="sp-av m">I</div><div class="sp-name">Ilham</div></div>
+  </div>
+  <button class="btn-white" onclick="go('s-login')">Mulai</button>
+  <div class="sp-note">Aplikasi ini hanya untuk berdua 🔒</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     LOGIN
+════════════════════════════════════════════════ -->
+<div id="s-login" class="screen">
+  <div class="lg-hero">
+    <h2>Masuk ke<br>Dunia Kita 💜</h2>
+    <p>Masukkan password dan kode pasangan</p>
+  </div>
+  <div class="lg-body">
+    <div class="sect" style="margin-bottom:12px">Kamu adalah</div>
+    <div class="lg-user-row">
+      <div class="uc f" id="uc-f" onclick="pickUser('f')">
+        <div class="uc-av">N</div>
+        <div class="uc-name">Navisa</div>
+        <div class="uc-role">Perempuan</div>
+      </div>
+      <div class="uc m" id="uc-m" onclick="pickUser('m')">
+        <div class="uc-av">I</div>
+        <div class="uc-name">Ilham</div>
+        <div class="uc-role">Laki-laki</div>
+      </div>
+    </div>
+    <div style="margin-bottom:20px">
+      <label class="lg-lbl">Password</label>
+      <input type="password" class="lg-input" id="lg-pw"
+             placeholder="Masukkan password"
+             onkeydown="if(event.key==='Enter') doLogin()">
+    </div>
+    <div class="lg-code" id="lg-code">
+      <div class="lg-box">1</div><div class="lg-box">2</div><div class="lg-box">3</div>
+      <div class="lg-box">4</div><div class="lg-box">5</div><div class="lg-box">6</div>
+    </div>
+    <button class="btn-primary" onclick="doLogin()">Lanjut →</button>
+    <div class="lg-hint">Belum punya code? <a onclick="showCode()">Buat Code Baru</a></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     HOME / DASHBOARD
+════════════════════════════════════════════════ -->
+<div id="s-home" class="screen">
+  <div class="hm-hero">
+    <div class="hm-top">
+      <div>
+        <div class="hm-greet" id="hm-greet">Halo, Ilham! 👋</div>
+        <div class="hm-sub"   id="hm-sub">Semangat pagi ini ya 💪</div>
+      </div>
+      <div class="hm-notif">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"
+                stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <div class="hm-notif-dot"></div>
+      </div>
+    </div>
+    <div class="hm-pair-pill">
+      <div class="pav f">N</div>
+      <div class="pav-info">
+        <div class="pav-name">Navisa</div>
+        <div class="pav-status">Online 2 mnt lalu</div>
+      </div>
+      <div class="pair-heart">💜</div>
+      <div class="pav-info" style="text-align:right">
+        <div class="pav-name">Ilham</div>
+        <div class="pav-status" id="hm-active-status">Aktif sekarang</div>
+      </div>
+      <div class="pav m">I</div>
+    </div>
+  </div>
+
+  <div class="hm-body">
+    <!-- Stats row -->
+    <div class="hm-stats">
+      <div class="hm-stat">
+        <div class="hm-stat-icon" style="background:#FEF2F2">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <path d="M8.56 2.9A7 7 0 0 1 19 9l.5 1c1.6 3.3 1 7.3-1.5 10a8 8 0 0 1-12 0c-2.5-2.7-3.1-6.7-1.5-10l.5-1a7 7 0 0 1 3.06-4.1"
+                  stroke="#EF4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="hm-stat-val">1.350</div>
+        <div class="hm-stat-sub">/ 1.800 kkal</div>
+        <div class="hm-stat-lbl">Kalori</div>
+      </div>
+      <div class="hm-stat">
+        <div class="hm-stat-icon" style="background:#F5F3FF">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <path d="M18 3a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3H6a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3V6a3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3h12a3 3 0 0 0 3-3 3 3 0 0 0-3-3z"
+                  stroke="#7C3AED" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="hm-stat-val">3/5</div>
+        <div class="hm-stat-sub">selesai</div>
+        <div class="hm-stat-lbl">Aktivitas</div>
+      </div>
+      <div class="hm-stat">
+        <div class="hm-stat-icon" style="background:#ECFEFF">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"
+                  stroke="#06B6D4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="hm-stat-val">6/8</div>
+        <div class="hm-stat-sub">gelas</div>
+        <div class="hm-stat-lbl">Air Minum</div>
+      </div>
+    </div>
+
+    <!-- Weight cards -->
+    <div class="hm-weights">
+      <div class="hm-wcard">
+        <div class="hm-wcard-label">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="7" r="4" stroke="#9CA3AF" stroke-width="2"/>
+            <path d="M20 21a8 8 0 1 0-16 0" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          Kamu (Ilham)
+        </div>
+        <div class="hm-wcard-kg"   id="hm-wm">68.7 kg</div>
+        <div class="hm-wcard-diff neg" id="hm-wm-d">-0.6 kg</div>
+      </div>
+      <div class="hm-wcard">
+        <div class="hm-wcard-label">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="7" r="4" stroke="#9CA3AF" stroke-width="2"/>
+            <path d="M20 21a8 8 0 1 0-16 0" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          Dia (Navisa)
+        </div>
+        <div class="hm-wcard-kg"   id="hm-wf">55.2 kg</div>
+        <div class="hm-wcard-diff neg" id="hm-wf-d">-0.3 kg</div>
+      </div>
+    </div>
+
+    <!-- Streak -->
+    <div class="hm-streak" onclick="go('s-streak')">
+      <span style="font-size:36px">🔥</span>
+      <div>
+        <div class="hm-streak-num" id="hm-streak-num">12</div>
+        <div class="hm-streak-txt">hari berturut-turut streak bersama</div>
+      </div>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style="margin-left:auto">
+        <polyline points="9 18 15 12 9 6" stroke="#D97706" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+
+    <!-- Quick menu -->
+    <div class="sect">Menu Cepat</div>
+    <div class="hm-menu-grid">
+      <div class="hm-mi" onclick="go('s-workout')">
+        <div class="hm-mi-icon" style="background:#F5F3FF">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M6 5v14M18 5v14M3 8h3M18 8h3M3 16h3M18 16h3M9 12h6" stroke="#7C3AED" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="hm-mi-lbl">Workout</div>
+      </div>
+      <div class="hm-mi" onclick="go('s-meal')">
+        <div class="hm-mi-icon" style="background:#FFFBEB">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M3 2l1.5 4.5M7 2L8.5 6.5M5.5 6.5C4.7 6.5 4 7.2 4 8c0 1.9 1.8 3.5 4 4v9h1V12c2.2-.5 4-2.1 4-4 0-.8-.7-1.5-1.5-1.5H5.5zM16 2v7c0 1.1.9 2 2 2h1v10h-3V2z" stroke="#D97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="hm-mi-lbl">Makanan</div>
+      </div>
+      <div class="hm-mi" onclick="go('s-water')">
+        <div class="hm-mi-icon" style="background:#ECFEFF">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" stroke="#06B6D4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="hm-mi-lbl">Air Minum</div>
+      </div>
+      <div class="hm-mi" onclick="go('s-weight')">
+        <div class="hm-mi-icon" style="background:#F0FDF4">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 3c-1.2 5.4-6 6-6 10a6 6 0 0 0 12 0c0-4-4.8-4.6-6-10z" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="hm-mi-lbl">Berat</div>
+      </div>
+    </div>
+  </div>
+  <div class="bnav" id="bnav-home"></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     PROGRESS
+════════════════════════════════════════════════ -->
+<div id="s-progress" class="screen">
+  <div class="ph">
+    <button class="back-btn" onclick="go('s-home')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><polyline points="15 18 9 12 15 6" stroke="#0F0A1E" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <span class="ph-title">Progress Kita 📊</span>
+    <div style="width:40px"></div>
+  </div>
+  <div class="prg-tabs">
+    <button class="ptab on" onclick="setPTab(this)">Minggu</button>
+    <button class="ptab"    onclick="setPTab(this)">Bulan</button>
+    <button class="ptab"    onclick="setPTab(this)">3 Bulan</button>
+  </div>
+  <div style="padding:0 20px 20px;overflow-y:auto;flex:1">
+    <div class="card" style="margin-bottom:12px">
+      <div class="sect">Perbandingan Berat Badan</div>
+      <div style="height:180px"><canvas id="prg-chart"></canvas></div>
+      <div style="display:flex;gap:16px;justify-content:center;margin-top:14px">
+        <div style="display:flex;align-items:center;gap:7px">
+          <div style="width:10px;height:10px;border-radius:50%;background:#7C3AED"></div>
+          <span style="font-size:12px;font-weight:600;color:var(--t2)">Ilham</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:7px">
+          <div style="width:10px;height:10px;border-radius:50%;background:#EC4899"></div>
+          <span style="font-size:12px;font-weight:600;color:var(--t2)">Navisa</span>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="sect">Rangkuman Minggu Ini</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--bd)">
+        <span style="font-size:14px;color:var(--t2);font-weight:500">Rata-rata Kalori</span>
+        <span style="font-size:15px;font-weight:700;color:var(--t)">1.420 <span style="font-size:11px;color:var(--a)">↑</span></span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--bd)">
+        <span style="font-size:14px;color:var(--t2);font-weight:500">Olahraga Selesai</span>
+        <span class="pill pill-purple">9 / 14 sesi</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0">
+        <span style="font-size:14px;color:var(--t2);font-weight:500">Air Minum Rata-rata</span>
+        <span class="pill pill-cyan">6.2 gelas</span>
+      </div>
+    </div>
+  </div>
+  <div class="bnav" id="bnav-progress"></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     WORKOUT
+════════════════════════════════════════════════ -->
+<div id="s-workout" class="screen">
+  <div class="ph">
+    <button class="back-btn" onclick="go('s-home')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><polyline points="15 18 9 12 15 6" stroke="#0F0A1E" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <span class="ph-title">Workout Hari Ini</span>
+    <div style="width:40px"></div>
+  </div>
+  <div style="font-size:12px;color:var(--t3);padding:6px 20px 8px;background:#fff;border-bottom:1px solid var(--bd);font-weight:500" id="wk-date-lbl">Sabtu, 24 Mei</div>
+  <div class="wk-toggle">
+    <button class="wkt-btn2 on m" id="wkg-m" onclick="setWkGender('m')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2"/><path d="M20 21a8 8 0 1 0-16 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      Ilham (Cowok)
+    </button>
+    <button class="wkt-btn2 f" id="wkg-f" onclick="setWkGender('f')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2"/><path d="M20 21a8 8 0 1 0-16 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      Navisa (Cewek)
+    </button>
+  </div>
+  <div style="overflow-y:auto;flex:1;padding-bottom:20px">
+    <div class="wk-hero" id="wk-hero">
+      <h3 id="wk-title">Upper Body Strength</h3>
+      <p  id="wk-desc">25 menit · 150 kkal terbakar</p>
+      <div class="wk-badges">
+        <span class="wk-badge" id="wk-b1">Intermediate</span>
+        <span class="wk-badge" id="wk-b2">Upper Body</span>
+      </div>
+    </div>
+    <div style="padding:0 20px">
+      <div class="card" id="wk-exlist"><div class="sect">Latihan Hari Ini</div></div>
+      <button class="btn-primary" id="wk-start-btn" onclick="startWkTracking()" style="margin-top:14px">Mulai Workout</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     WORKOUT TRACKING
+════════════════════════════════════════════════ -->
+<div id="s-wkt" class="screen" style="background:linear-gradient(160deg,#F5F3FF,#FDF2F8)">
+  <div class="ph" style="background:transparent;border:none">
+    <button class="back-btn" onclick="stopWkTracking()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><line x1="18" y1="6" x2="6" y2="18" stroke="#0F0A1E" stroke-width="2.2" stroke-linecap="round"/><line x1="6" y1="6" x2="18" y2="18" stroke="#0F0A1E" stroke-width="2.2" stroke-linecap="round"/></svg>
+    </button>
+    <span class="ph-title" id="wkt-sname" style="font-size:15px">Upper Body Strength</span>
+    <div style="width:40px"></div>
+  </div>
+  <div style="padding:0 20px 24px;overflow-y:auto;flex:1">
+    <div class="wkt-card">
+      <div class="wkt-time-lbl">Waktu berjalan</div>
+      <div class="wkt-clock" id="wkt-clock">00:00</div>
+      <div class="wkt-sep"></div>
+      <div class="wkt-ex-lbl">Exercise Sekarang</div>
+      <div class="wkt-ex-name" id="wkt-ex-n">Push Up</div>
+      <div class="wkt-ex-rep"  id="wkt-ex-r">4 × 12 reps</div>
+      <div class="wkt-ring-wrap">
+        <svg viewBox="0 0 130 130" width="130" height="130">
+          <circle cx="65" cy="65" r="56" fill="none" stroke="#EDE9FE" stroke-width="9"/>
+          <circle cx="65" cy="65" r="56" fill="none" stroke="#7C3AED" stroke-width="9" stroke-linecap="round" id="wkt-ring" stroke-dasharray="351.9" stroke-dashoffset="88"/>
+        </svg>
+        <div class="wkt-ring-text" id="wkt-ring-txt">4/12</div>
+      </div>
+      <div class="wkt-next-card">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#7C3AED" stroke-width="2"/><polyline points="12 8 16 12 12 16" stroke="#7C3AED" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="8" y1="12" x2="16" y2="12" stroke="#7C3AED" stroke-width="2" stroke-linecap="round"/></svg>
+        <div>
+          <div class="wkt-next-lbl">Selanjutnya</div>
+          <div class="wkt-next-name" id="wkt-next-n">Pull Up — 4 × 8</div>
+        </div>
+      </div>
+    </div>
+    <div class="wkt-actions">
+      <button class="wkt-action pause" onclick="togglePause()" id="pause-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" id="pause-ic">
+          <rect x="6" y="4" width="4" height="16" rx="1" fill="#7C3AED"/>
+          <rect x="14" y="4" width="4" height="16" rx="1" fill="#7C3AED"/>
+        </svg>
+        <span id="pause-txt">Pause</span>
+      </button>
+      <button class="wkt-action finish" onclick="finishWk()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Selesai
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     MEAL LOG
+════════════════════════════════════════════════ -->
+<div id="s-meal" class="screen">
+  <div class="ph">
+    <button class="back-btn" onclick="go('s-home')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><polyline points="15 18 9 12 15 6" stroke="#0F0A1E" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <span class="ph-title">Catat Makanan</span>
+    <span style="font-size:12px;color:var(--t3);font-weight:500">Hari ini</span>
+  </div>
+  <div style="padding:16px 20px 24px;overflow-y:auto;flex:1">
+    <div class="srch">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="8" stroke="#9CA3AF" stroke-width="2"/><line x1="21" y1="21" x2="16.65" y2="16.65" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"/></svg>
+      <input type="text" placeholder="Cari makanan..." id="food-search">
+    </div>
+    <div class="card">
+      <div class="sect">Makanan Hari Ini</div>
+      <div class="food-row"><div class="food-icon">🍚</div><div style="flex:1"><span class="food-name">Nasi Putih</span><span class="food-portion">1 porsi (100gr)</span></div><span class="food-kcal">130 kkal</span><button class="food-add" onclick="showToast('✓ Nasi putih dicatat!')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12" stroke="#7C3AED" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+      <div class="food-row"><div class="food-icon">🍗</div><div style="flex:1"><span class="food-name">Ayam Panggang</span><span class="food-portion">100 gr</span></div><span class="food-kcal">165 kkal</span><button class="food-add" onclick="showToast('✓ Ayam panggang dicatat!')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12" stroke="#7C3AED" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+      <div class="food-row"><div class="food-icon">🥬</div><div style="flex:1"><span class="food-name">Sayur Tumis</span><span class="food-portion">1 porsi</span></div><span class="food-kcal">80 kkal</span><button class="food-add" onclick="showToast('✓ Sayur tumis dicatat!')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12" stroke="#7C3AED" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+      <div class="food-row"><div class="food-icon">🍌</div><div style="flex:1"><span class="food-name">Pisang</span><span class="food-portion">1 buah</span></div><span class="food-kcal">90 kkal</span><button class="food-add" onclick="showToast('✓ Pisang dicatat!')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12" stroke="#7C3AED" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+      <div class="food-row"><div class="food-icon">🥚</div><div style="flex:1"><span class="food-name">Telur Rebus</span><span class="food-portion">1 butir</span></div><span class="food-kcal">70 kkal</span><button class="food-add" onclick="showToast('✓ Telur dicatat!')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12" stroke="#7C3AED" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+    </div>
+    <button class="btn-primary" onclick="showToast('✓ Makanan ditambahkan! +5 XP')">+ Tambah Manual</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     WATER TRACKER
+════════════════════════════════════════════════ -->
+<div id="s-water" class="screen">
+  <div class="ph">
+    <button class="back-btn" onclick="go('s-home')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><polyline points="15 18 9 12 15 6" stroke="#0F0A1E" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <span class="ph-title">Air Minum</span>
+    <span style="font-size:12px;color:var(--t3);font-weight:500">Hari ini</span>
+  </div>
+  <div style="overflow-y:auto;flex:1">
+    <div class="water-hero">
+      <div class="water-drop-wrap">
+        <svg class="water-drop-svg" viewBox="0 0 148 170" fill="none">
+          <defs>
+            <linearGradient id="wgrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#22D3EE"/>
+              <stop offset="100%" stop-color="#0284C7"/>
+            </linearGradient>
+          </defs>
+          <path d="M74 10 C74 10 14 78 14 110 a60 60 0 0 0 120 0 C134 78 74 10 74 10z" fill="url(#wgrad)" opacity=".15"/>
+          <path d="M74 10 C74 10 14 78 14 110 a60 60 0 0 0 120 0 C134 78 74 10 74 10z" fill="url(#wgrad)"/>
+          <path d="M40 136 Q74 116 108 136" stroke="rgba(255,255,255,.3)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        </svg>
+        <div class="water-num-overlay">
+          <div class="water-num" id="water-disp">6</div>
+          <div class="water-unit">gelas</div>
+        </div>
+      </div>
+      <div class="water-target-txt">Target: 8 gelas hari ini</div>
+    </div>
+    <div class="glasses-g" id="glasses-g"></div>
+    <div class="water-note">1 gelas = 250 ml · Tetap terhidrasi! 💧</div>
+    <button class="btn-cyan" onclick="addGlass()">+ Minum Sekarang</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     WEIGHT TRACKER
+════════════════════════════════════════════════ -->
+<div id="s-weight" class="screen">
+  <div class="ph">
+    <button class="back-btn" onclick="go('s-home')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><polyline points="15 18 9 12 15 6" stroke="#0F0A1E" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <span class="ph-title">Berat Badan</span>
+    <div style="width:40px"></div>
+  </div>
+  <div style="padding:20px;overflow-y:auto;flex:1">
+    <div class="wt-toggle">
+      <button class="wt-tab on" id="wt-me"  onclick="setWtTab('me')">Kamu</button>
+      <button class="wt-tab"    id="wt-dia" onclick="setWtTab('dia')">Dia</button>
+    </div>
+    <div class="wt-big">
+      <div class="wt-kg"  id="wt-kg">68.7 kg</div>
+      <div class="wt-diff neg" id="wt-diff">-0.6 kg dari kemarin</div>
+    </div>
+    <div class="card" style="margin-bottom:14px">
+      <div class="sect">Grafik Berat Badan</div>
+      <div style="height:160px"><canvas id="wt-chart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="sect">Catat Berat Hari Ini</div>
+      <div style="display:flex;gap:10px">
+        <input type="number" class="w-input" id="w-input" placeholder="kg" step="0.1">
+        <button class="w-record-btn" onclick="recWeight()">Catat</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     STREAK & ACHIEVEMENT
+════════════════════════════════════════════════ -->
+<div id="s-streak" class="screen">
+  <div class="ph">
+    <button class="back-btn" onclick="go('s-home')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><polyline points="15 18 9 12 15 6" stroke="#0F0A1E" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <span class="ph-title">Streak & Achievement</span>
+    <div style="width:40px"></div>
+  </div>
+  <div style="padding:20px;overflow-y:auto;flex:1">
+    <div class="streak-hero">
+      <div style="font-size:14px;font-weight:700;color:#92400E;margin-bottom:8px">Streak Hari Ini</div>
+      <div class="streak-num-big" id="streak-big-num">12</div>
+      <div style="font-size:14px;color:#B45309;margin-top:6px;font-weight:500">hari berturut-turut</div>
+      <span class="streak-fire">🔥</span>
+    </div>
+    <div class="card">
+      <div class="sect">Achievement</div>
+      <div class="ach-item"><div class="ach-icon" style="background:#FFFBEB">🥇</div><div style="flex:1"><div class="ach-title">First Step</div><div class="ach-desc">Selesai workout pertama</div></div><div class="ach-check done"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12" stroke="#10B981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>
+      <div class="ach-item"><div class="ach-icon" style="background:#F5F3FF">⚡</div><div style="flex:1"><div class="ach-title">7 Days Challenge</div><div class="ach-desc">Capai 7 hari berturut-turut</div></div><div class="ach-check done"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12" stroke="#10B981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>
+      <div class="ach-item"><div class="ach-icon" style="background:#FDF2F8">💪</div><div style="flex:1"><div class="ach-title">10 Days Challenge</div><div class="ach-desc">Capai 10 hari berturut-turut</div></div><div class="ach-check done"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12" stroke="#10B981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>
+      <div class="ach-item"><div class="ach-icon" style="background:#F9FAFB">👑</div><div style="flex:1"><div class="ach-title">Consistency King</div><div class="ach-desc">Capai 30 hari berturut-turut</div></div><div class="ach-check lock"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke="#9CA3AF" stroke-width="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"/></svg></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     CHAT
+════════════════════════════════════════════════ -->
+<div id="s-chat" class="screen" style="background:#F5F3FF">
+  <div class="chat-header">
+    <button class="back-btn" onclick="go('s-home')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><polyline points="15 18 9 12 15 6" stroke="#0F0A1E" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="chat-partner-av f">N</div>
+    <div style="flex:1">
+      <div class="chat-partner-name">Kita Berdua 💜</div>
+      <div class="chat-partner-status">● Online</div>
+    </div>
+    <button class="icon-btn">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><polygon points="23 7 16 12 23 17 23 7" stroke="#7C3AED" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2" stroke="#7C3AED" stroke-width="2"/></svg>
+    </button>
+  </div>
+  <div class="cheer-row">
+    <button class="cheer-btn" onclick="sendCheer('Semangat workout ya! 💪')">Semangat workout! 💪</button>
+    <button class="cheer-btn" onclick="sendCheer('Proud of you! 🥰')">Proud of you! 🥰</button>
+    <button class="cheer-btn" onclick="sendCheer('Jangan skip makan sehat! 🥗')">Jangan skip! 🥗</button>
+    <button class="cheer-btn" onclick="sendCheer('I miss you 💜')">Miss you 💜</button>
+  </div>
+  <div class="chat-msgs" id="chat-msgs">
+    <div class="msg them">
+      <div class="chat-av-row">
+        <div class="chat-smav f">N</div>
+        <div><div class="msg-bub">Sayang, udah workout?<br>Semangat yaa! 🤗</div><span class="msg-time">10:30</span></div>
+      </div>
+    </div>
+    <div class="msg me"><div class="msg-bub">Udah nihh tadi pagi 😄</div><span class="msg-time">10:32</span></div>
+    <div class="msg them">
+      <div class="chat-av-row">
+        <div class="chat-smav f">N</div>
+        <div><div class="msg-bub">Proud of you! 😊❤️</div><span class="msg-time">10:35</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="chat-input-area">
+    <textarea class="chat-textarea" id="chat-in" rows="1" placeholder="Ketik pesan..."
+              onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();doSendChat()}"></textarea>
+    <button class="chat-send" onclick="doSendChat()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><line x1="22" y1="2" x2="11" y2="13" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><polygon points="22 2 15 22 11 13 2 9 22 2" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+  <div class="bnav" id="bnav-chat"></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     AI HEALTH COACH
+════════════════════════════════════════════════ -->
+<div id="s-ai" class="screen" style="background:#F5F3FF">
+  <div class="ai-header">
+    <button class="back-btn" onclick="go('s-home')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><polyline points="15 18 9 12 15 6" stroke="#0F0A1E" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="ai-av">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="11" width="18" height="10" rx="2" stroke="white" stroke-width="2"/><path d="M9 11V7a3 3 0 0 1 6 0v4" stroke="white" stroke-width="2" stroke-linecap="round"/><circle cx="9" cy="16" r="1" fill="white"/><circle cx="15" cy="16" r="1" fill="white"/></svg>
+    </div>
+    <div style="flex:1">
+      <div class="ai-name">AI Health Coach</div>
+      <div class="ai-status">● OpenHealth + Claude</div>
+    </div>
+    <div style="width:40px"></div>
+  </div>
+  <div class="ai-ctx">
+    <div class="ai-ctx-title">Konteks kesehatan aktif</div>
+    <div class="ai-ctx-chips" id="ai-ctx-chips">
+      <span class="ai-ctx-chip">Ilham 68.7kg</span>
+      <span class="ai-ctx-chip">Navisa 55.2kg</span>
+      <span class="ai-ctx-chip">Streak 12 hari</span>
+      <span class="ai-ctx-chip">Air 6/8</span>
+    </div>
+  </div>
+  <div class="ai-msgs" id="ai-msgs">
+    <div class="ai-msg bot">
+      <div class="ai-bot-hdr">
+        <div class="ai-bot-av"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><rect x="3" y="11" width="18" height="10" rx="2" stroke="white" stroke-width="2"/><path d="M9 11V7a3 3 0 0 1 6 0v4" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div>
+        <span class="ai-bot-name">Coach AI</span>
+      </div>
+      <div class="ai-bub">Halo Ilham & Navisa! 👋 Keren banget kalian sudah <strong>12 hari streak bersama</strong>! Progress berat badan kalian konsisten. Ada yang mau ditanyakan soal kesehatan, workout, atau diet hari ini?</div>
+    </div>
+  </div>
+  <div class="ai-input-wrap">
+    <div class="ai-quick">
+      <button class="ai-qbtn" onclick="aiAsk('Workout terbaik untuk fat loss minggu ini?')">💪 Workout fat loss</button>
+      <button class="ai-qbtn" onclick="aiAsk('Analisis progress berat badan kami.')">📊 Analisis progress</button>
+      <button class="ai-qbtn" onclick="aiAsk('Tips menjaga konsistensi saat sedang malas?')">💡 Tips konsistensi</button>
+      <button class="ai-qbtn" onclick="aiAsk('Menu makan sehat yang mudah dibuat?')">🥗 Menu sehat</button>
+    </div>
+    <div class="ai-bottom">
+      <textarea class="ai-textarea" id="ai-in" rows="1" placeholder="Tanya coach AI..."
+                onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendAI()}"></textarea>
+      <button class="ai-send" onclick="sendAI()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><line x1="22" y1="2" x2="11" y2="13" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><polygon points="22 2 15 22 11 13 2 9 22 2" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     PROFILE
+════════════════════════════════════════════════ -->
+<div id="s-profile" class="screen">
+  <div class="prof-hero">
+    <div class="prof-hero-top">
+      <button class="back-btn" style="background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.25)" onclick="go('s-home')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><polyline points="15 18 9 12 15 6" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <span class="prof-hero-title">Profil</span>
+      <button class="prof-setting-btn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="white" stroke-width="2"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" stroke="white" stroke-width="2"/></svg>
+      </button>
+    </div>
+    <div class="prof-pair">
+      <div class="prof-av-wrap">
+        <div class="prof-av f">N</div>
+        <div class="prof-av-name">Navisa</div>
+        <div class="prof-av-stat">55.2 kg · 160 cm</div>
+      </div>
+      <div class="prof-heart">💜</div>
+      <div class="prof-av-wrap">
+        <div class="prof-av m">I</div>
+        <div class="prof-av-name">Ilham</div>
+        <div class="prof-av-stat">68.7 kg · 175 cm</div>
+      </div>
+    </div>
+  </div>
+  <div class="prof-stats">
+    <div class="prof-stat-card"><div class="psc-val" id="prof-streak">12</div><div class="psc-lbl">Streak 🔥</div></div>
+    <div class="prof-stat-card"><div class="psc-val">9</div><div class="psc-lbl">Workout ✅</div></div>
+    <div class="prof-stat-card"><div class="psc-val">3</div><div class="psc-lbl">Achievement 🏆</div></div>
+  </div>
+  <div style="padding:0 20px 24px;overflow-y:auto;flex:1">
+    <div class="card">
+      <div class="menu-row" onclick="showToast('Edit profil')"><div class="menu-icon" style="background:#F5F3FF"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="#7C3AED" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="#7C3AED" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="menu-lbl">Edit Profil</span><svg class="menu-chev" width="16" height="16" viewBox="0 0 24 24" fill="none"><polyline points="9 18 15 12 9 6" stroke="#0F0A1E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="menu-row" onclick="showToast('Pengaturan notifikasi')"><div class="menu-icon" style="background:#FFFBEB"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="menu-lbl">Pengaturan Notifikasi</span><svg class="menu-chev" width="16" height="16" viewBox="0 0 24 24" fill="none"><polyline points="9 18 15 12 9 6" stroke="#0F0A1E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="menu-row" onclick="showToast('Privasi & Keamanan')"><div class="menu-icon" style="background:#F0FDF4"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke="#10B981" stroke-width="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4" stroke="#10B981" stroke-width="2" stroke-linecap="round"/></svg></div><span class="menu-lbl">Privasi & Keamanan</span><svg class="menu-chev" width="16" height="16" viewBox="0 0 24 24" fill="none"><polyline points="9 18 15 12 9 6" stroke="#0F0A1E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="menu-row" onclick="showToast('Backup data')"><div class="menu-icon" style="background:#EFF6FF"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><polyline points="16 16 12 12 8 16" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="12" y1="12" x2="12" y2="21" stroke="#3B82F6" stroke-width="2" stroke-linecap="round"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="menu-lbl">Backup Data</span><svg class="menu-chev" width="16" height="16" viewBox="0 0 24 24" fill="none"><polyline points="9 18 15 12 9 6" stroke="#0F0A1E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="menu-row" onclick="go('s-ai')"><div class="menu-icon" style="background:#F5F3FF"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="11" width="18" height="10" rx="2" stroke="#7C3AED" stroke-width="2"/><path d="M9 11V7a3 3 0 0 1 6 0v4" stroke="#7C3AED" stroke-width="2" stroke-linecap="round"/><circle cx="9" cy="16" r="1.2" fill="#7C3AED"/><circle cx="15" cy="16" r="1.2" fill="#7C3AED"/></svg></div><span class="menu-lbl">AI Health Coach</span><svg class="menu-chev" width="16" height="16" viewBox="0 0 24 24" fill="none"><polyline points="9 18 15 12 9 6" stroke="#0F0A1E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="menu-row" onclick="showToast('Better Together v1.0 💜')"><div class="menu-icon" style="background:#F9FAFB"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#9CA3AF" stroke-width="2"/><line x1="12" y1="8" x2="12" y2="12" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"/><line x1="12" y1="16" x2="12.01" y2="16" stroke="#9CA3AF" stroke-width="3" stroke-linecap="round"/></svg></div><span class="menu-lbl">Tentang Aplikasi</span><svg class="menu-chev" width="16" height="16" viewBox="0 0 24 24" fill="none"><polyline points="9 18 15 12 9 6" stroke="#0F0A1E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="menu-row" onclick="doLogout()"><div class="menu-icon" style="background:#FEF2F2"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" stroke="#EF4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><polyline points="16 17 21 12 16 7" stroke="#EF4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="21" y1="12" x2="9" y2="12" stroke="#EF4444" stroke-width="2" stroke-linecap="round"/></svg></div><span class="menu-lbl" style="color:#EF4444">Keluar</span><svg class="menu-chev" width="16" height="16" viewBox="0 0 24 24" fill="none"><polyline points="9 18 15 12 9 6" stroke="#EF4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    </div>
+  </div>
+  <div class="bnav" id="bnav-profile"></div>
+</div>
+
+<!-- Toast & Firebase status -->
+<div class="toast" id="toast"></div>
+<div id="fb-bar"></div>
+
+</div><!-- /.shell -->
+
+<script type="module" src="/src/main.js"></script>
+</body>
 </html>
