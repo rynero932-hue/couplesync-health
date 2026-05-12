@@ -1,9 +1,8 @@
 {
   "name": "better-together",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
   "type": "module",
-  "description": "Better Together — Aplikasi kesehatan pasangan LDR untuk Ilham & Navisa",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -16,7 +15,5 @@
   "devDependencies": {
     "vite": "^5.4.0"
   },
-  "engines": {
-    "node": ">=18.0.0"
-  }
+  "engines": { "node": ">=18.0.0" }
 }

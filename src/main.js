@@ -1,85 +1,78 @@
-// src/main.js — Application entry point
-// ALL window.* at top-level so HTML onclick handlers work immediately.
+// src/main.js — entry point
+// ALL window.* at top-level so onclick="window.X()" always works.
 
-import { state }           from './state.js';
-import { go, injectNavs }  from './ui/nav.js';
-import { showToast }       from './ui/toast.js';
-import { setupNotifications, requestNotifications } from './ui/notifications.js';
-
-import { pickUser, doLogin, showCode, onLoginSuccess, doLogout }
-                           from './screens/login.js';
-import { setWorkoutGender, renderWorkout, startTracking,
-         stopTracking, togglePause, finishWorkout }
-                           from './screens/workout.js';
-import { renderGlasses, toggleGlass, addGlass }
-                           from './screens/water.js';
-import { setWeightTab, recordWeight }
-                           from './screens/weight.js';
-import { sendChat, sendCheer }
-                           from './screens/chat.js';
-import { sendAI, aiAsk }   from './screens/ai.js';
-
-import { initAuthListener } from './firebase/auth.js';
-import { seedIfNeeded }     from './firebase/firestore.js';
+import { go }            from './ui/router.js';
+import { toast }         from './ui/toast.js';
 import { renderProgressChart } from './ui/charts.js';
 
-// ── GLOBALS — top-level so onclick="window.go(...)" works instantly ───────────
-window.go         = go;
-window.showToast  = showToast;
+import { pickUser, showCode, doLogin, doLogout, switchUser, initAuthListener }
+                         from './screens/auth.js';
+import { setWorkoutGender, renderWorkoutScreen, startWorkoutTracking,
+         stopWorkoutTracking, togglePause, finishWorkout }
+                         from './screens/workout.js';
+import { renderGlasses, toggleGlass, addGlass }
+                         from './screens/water.js';
+import { setWeightTab, recordWeight }
+                         from './screens/weight.js';
+import { toggleHabit }   from './screens/habits.js';
+import { sendChat, sendCheer } from './screens/chat.js';
+import { sendAI, aiAsk } from './screens/ai.js';
+import { setupNotifications, requestNotifications } from './screens/notifications.js';
+
+// ── Globals ───────────────────────────────────────────────────────────────────
+window.go          = go;
+window.showToast   = toast;
 
 // Auth
-window.pickUser   = pickUser;
-window.doLogin    = doLogin;
-window.showCode   = showCode;
-window.doLogout   = doLogout;
+window.pickUser    = pickUser;
+window.showCode    = showCode;
+window.doLogin     = doLogin;
+window.doLogout    = doLogout;
+window.switchUser  = switchUser;
 
 // Workout
-window.setWkGender     = setWorkoutGender;
-window.renderWorkout   = renderWorkout;
-window.startWkTracking = startTracking;
-window.stopWkTracking  = stopTracking;
-window.togglePause     = togglePause;
-window.finishWk        = finishWorkout;
+window.setWkGender        = setWorkoutGender;
+window.renderWorkout      = renderWorkoutScreen;
+window.startWkTracking    = startWorkoutTracking;
+window.stopWkTracking     = stopWorkoutTracking;
+window.togglePause        = togglePause;
+window.finishWk           = finishWorkout;
 
 // Water
-window.renderGlasses   = renderGlasses;
-window.toggleGlass     = toggleGlass;
-window.addGlass        = addGlass;
+window.renderGlasses      = renderGlasses;
+window.toggleGlass        = toggleGlass;
+window.addGlass           = addGlass;
 
 // Weight
-window.setWtTab  = setWeightTab;
-window.recWeight = recordWeight;
+window.setWtTab           = setWeightTab;
+window.recWeight          = recordWeight;
 
-// Progress tab toggle
-window.setPTab = (el) => {
+// Habits
+window.toggleHabit        = toggleHabit;
+
+// Progress
+window.setPTab = el => {
   document.querySelectorAll('.ptab').forEach(t => t.classList.remove('on'));
   el.classList.add('on');
+  renderProgressChart();
 };
 
 // Chat
-window.doSendChat = sendChat;
-window.sendCheer  = sendCheer;
+window.doSendChat         = sendChat;
+window.sendCheer          = sendCheer;
 
 // AI
-window.sendAI = sendAI;
-window.aiAsk  = aiAsk;
+window.sendAI             = sendAI;
+window.aiAsk              = aiAsk;
 
-// Notifications — exposed so bell button can trigger it
+// Notifications
 window.requestNotifications = requestNotifications;
 
-// ── BOOT ──────────────────────────────────────────────────────────────────────
+// ── Boot ──────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
-  // Inject bottom navs into bnav-* placeholders (backup — HTML already has hardcoded navs)
-  injectNavs();
-
-  // Default UI state
+  // Default state
+  document.getElementById('lg-pw').value = '';
   pickUser('m');
-  const pwEl = document.getElementById('lg-pw');
-  if (pwEl) pwEl.value = '';
-
-  // Render initial screens
-  renderWorkout();
-  renderGlasses();
 
   // Date label
   const dateEl = document.getElementById('wk-date-lbl');
@@ -89,17 +82,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Setup notifications (asks for permission if needed)
+  // Notification bell
+  const bell = document.querySelector('.hm-notif');
+  if (bell) bell.addEventListener('click', requestNotifications);
+
+  // Setup notifications silently
   setupNotifications().catch(console.warn);
 
-  // Wire bell button on home screen to request notifications
-  const bellBtn = document.querySelector('.hm-notif');
-  if (bellBtn) {
-    bellBtn.style.cursor = 'pointer';
-    bellBtn.onclick = () => requestNotifications();
-  }
-
-  // Firebase auth — restore session or wait for login
-  initAuthListener(onLoginSuccess);
-  seedIfNeeded().catch(err => console.warn('[seed]', err.message));
+  // Firebase session restore
+  initAuthListener();
 });

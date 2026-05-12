@@ -1,59 +1,84 @@
 // src/screens/chat.js
+import { state }        from '../state.js';
+import { sendMsg, listenChat } from '../firebase/db.js';
+import { toast }        from '../ui/toast.js';
 
-import { state }         from '../state.js';
-import { AUTO_REPLIES }  from '../data/workouts.js';
+const FALLBACK_REPLIES = [
+  'Semangat terus ya sayang! 💜',
+  'Proud of you banget 🥰',
+  'Ayo kita bisa! 💪',
+  'Kamu yang terbaik! 🌟',
+  'I miss you 💜',
+];
 
-async function persistMessage(text) {
-  const { sendChatMessage } = await import('../firebase/firestore.js');
-  return sendChatMessage(text);
+let _unsubChat = null;
+
+export function initChat() {
+  _unsubChat?.();
+  _unsubChat = listenChat(snap => renderMessages(snap));
+}
+
+function renderMessages(snap) {
+  const msgs = document.getElementById('chat-msgs');
+  if (!msgs) return;
+  msgs.innerHTML = '';
+  snap.forEach(d => {
+    const data  = d.data();
+    const isMe  = data.sender === state.me;
+    const time  = data.createdAt?.toDate
+      ? data.createdAt.toDate().toLocaleTimeString('id', { hour: '2-digit', minute: '2-digit' })
+      : '';
+    appendBubble(msgs, safe(data.text), isMe, time);
+  });
+  msgs.scrollTop = msgs.scrollHeight;
 }
 
 export async function sendChat() {
-  const inputEl = document.getElementById('chat-in');
-  const text    = inputEl?.value.trim() || '';
+  const input = document.getElementById('chat-in');
+  const text  = input?.value.trim() ?? '';
   if (!text) return;
-  inputEl.value = '';
+  input.value = '';
 
   try {
-    await persistMessage(text);
-    // Firestore realtime listener re-renders messages automatically
+    await sendMsg(text);
   } catch (err) {
-    console.error('[sendChat]', err);
     // Offline fallback
-    appendLocal(text, true);
-    setTimeout(() => {
-      const reply = AUTO_REPLIES[Math.floor(Math.random() * AUTO_REPLIES.length)];
-      appendLocal(reply, false);
-    }, 1100);
+    const msgs = document.getElementById('chat-msgs');
+    if (msgs) {
+      appendBubble(msgs, safe(text), true, now());
+      msgs.scrollTop = msgs.scrollHeight;
+      setTimeout(() => {
+        const reply = FALLBACK_REPLIES[Math.floor(Math.random() * FALLBACK_REPLIES.length)];
+        appendBubble(msgs, reply, false, now());
+        msgs.scrollTop = msgs.scrollHeight;
+      }, 1200);
+    }
   }
 }
 
 export function sendCheer(msg) {
-  const inputEl = document.getElementById('chat-in');
-  if (inputEl) inputEl.value = msg;
+  const input = document.getElementById('chat-in');
+  if (input) input.value = msg;
   sendChat();
 }
 
-function appendLocal(text, isMe) {
-  const msgs = document.getElementById('chat-msgs');
-  if (!msgs) return;
-  const time  = new Date().toLocaleTimeString('id', { hour: '2-digit', minute: '2-digit' });
-  const div   = document.createElement('div');
+function appendBubble(container, text, isMe, time) {
+  const div = document.createElement('div');
   div.className = 'msg ' + (isMe ? 'me' : 'them');
-
-  const safeText = String(text).replace(/</g, '&lt;').replace(/>/g, '&gt;');
-
   if (isMe) {
-    div.innerHTML = `<div class="msg-bub">${safeText}</div><span class="msg-time">${time}</span>`;
+    div.innerHTML = `<div class="msg-bub">${text}</div><span class="msg-time">${time}</span>`;
   } else {
-    const pRole = state.currentUser === 'm' ? 'f' : 'm';
-    const init  = pRole === 'f' ? 'N' : 'I';
+    const pu   = state.partnerUser;
+    const init = pu?.initial ?? '?';
+    const cls  = pu?.colorClass ?? 'm';
     div.innerHTML = `
       <div class="chat-av-row">
-        <div class="chat-smav ${pRole}">${init}</div>
-        <div><div class="msg-bub">${safeText}</div><span class="msg-time">${time}</span></div>
+        <div class="chat-av ${cls}">${init}</div>
+        <div><div class="msg-bub">${text}</div><span class="msg-time">${time}</span></div>
       </div>`;
   }
-  msgs.appendChild(div);
-  msgs.scrollTop = msgs.scrollHeight;
+  container.appendChild(div);
 }
+
+const safe = s => String(s).replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const now  = () => new Date().toLocaleTimeString('id',{hour:'2-digit',minute:'2-digit'});

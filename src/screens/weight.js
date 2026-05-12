@@ -1,78 +1,61 @@
 // src/screens/weight.js
+import { state }              from '../state.js';
+import { saveWeight }         from '../firebase/db.js';
+import { toast, statusBar }   from '../ui/toast.js';
+import { renderWeightChartFn, updateWeightChart } from '../ui/charts.js';
 
-import { state }             from '../state.js';
-import { showToast, fbBar }  from '../ui/toast.js';
-import { updateWeightChart } from '../ui/charts.js';
-
-async function persistWeight(role, kg) {
-  const { saveWeight } = await import('../firebase/firestore.js');
-  return saveWeight(role, kg); // throws EXTREME_CHANGE if needed
+export function renderWeightChart() {
+  const role = state.weightTab === 'me' ? state.me : state.partner;
+  renderWeightChartFn(role);
+  updateWeightStats(role);
 }
 
 export function setWeightTab(tab) {
   state.weightTab = tab;
-
   const meEl  = document.getElementById('wt-me');
   const diaEl = document.getElementById('wt-dia');
   if (meEl)  meEl.className  = 'wt-tab' + (tab === 'me'  ? ' on' : '');
   if (diaEl) diaEl.className = 'wt-tab' + (tab === 'dia' ? ' on' : '');
+  const role = tab === 'me' ? state.me : state.partner;
+  updateWeightChart(role);
+  updateWeightStats(role);
+}
 
-  const role = tab === 'me'
-    ? state.currentUser
-    : (state.currentUser === 'm' ? 'f' : 'm');
-
-  const data = state.weightData[role];
-  const last = data[data.length - 1];
-  const prev = data[data.length - 2];
-  const diff = parseFloat((last - prev).toFixed(1));
+function updateWeightStats(role) {
+  const hist = state.weightHistory[role];
+  const last = hist[hist.length - 1];
+  const prev = hist[hist.length - 2];
+  const diff = +(last - prev).toFixed(1);
 
   const kgEl   = document.getElementById('wt-kg');
   const diffEl = document.getElementById('wt-diff');
   if (kgEl)   kgEl.textContent   = `${last} kg`;
   if (diffEl) {
-    diffEl.textContent = `${diff <= 0 ? '' : '+'}${diff} kg dari kemarin`;
+    diffEl.textContent = `${diff > 0 ? '+' : ''}${diff} kg dari kemarin`;
     diffEl.className   = 'wt-diff ' + (diff <= 0 ? 'neg' : 'pos');
   }
-
-  updateWeightChart();
 }
 
 export async function recordWeight() {
   const inputEl = document.getElementById('w-input');
-  const v       = parseFloat(inputEl?.value || '');
+  const v       = parseFloat(inputEl?.value ?? '');
+  if (!v || v < 30 || v > 200) { toast('Masukkan berat yang valid (30–200 kg)'); return; }
 
-  if (!v || v < 30 || v > 200) {
-    showToast('Masukkan berat yang valid (30–200 kg)');
-    return;
-  }
-
-  const role = state.weightTab === 'me'
-    ? state.currentUser
-    : (state.currentUser === 'm' ? 'f' : 'm');
-
-  fbBar('Menyimpan berat…');
+  const role = state.weightTab === 'me' ? state.me : state.partner;
+  statusBar('Menyimpan berat…');
   try {
-    await persistWeight(role, v);
-
-    state.weightData[role].push(v);
-    state.weightData[role].shift();
+    await saveWeight(role, v);
+    state.weightHistory[role] = [...state.weightHistory[role].slice(1), v];
     if (inputEl) inputEl.value = '';
     setWeightTab(state.weightTab);
-
-    const homeEl = role === 'm'
-      ? document.getElementById('hm-wm')
-      : document.getElementById('hm-wf');
+    // Update home card
+    const homeEl = document.getElementById(role === 'm' ? 'hm-wt-m' : 'hm-wt-f');
     if (homeEl) homeEl.textContent = `${v} kg`;
-
-    showToast('✓ Berat berhasil dicatat! 👍');
-    fbBar('Berat tersimpan ✓', true);
+    toast('✓ Berat berhasil dicatat! 👍');
+    statusBar('Berat tersimpan ✓', true);
   } catch (err) {
-    if (err.message === 'EXTREME_CHANGE') {
-      showToast('Perubahan terlalu ekstrem, cek lagi ya ⚠️');
-    } else {
-      console.error('[recordWeight]', err);
-      showToast('Gagal simpan. Coba lagi.');
-    }
-    fbBar('Gagal simpan berat', false);
+    if (err.message === 'EXTREME_CHANGE') toast('Perubahan terlalu ekstrem (max 3 kg/hari) ⚠️');
+    else toast('Gagal simpan. Coba lagi.');
+    statusBar('Gagal simpan berat', false);
   }
 }

@@ -1,103 +1,82 @@
 // src/screens/ai.js
-
 import { state } from '../state.js';
 
-const AI_MODEL = 'claude-sonnet-4-20250514';
+const MODEL = 'claude-sonnet-4-20250514';
 
 export async function sendAI() {
   const input = document.getElementById('ai-in');
-  const msg   = input.value.trim();
+  const msg   = input?.value.trim() ?? '';
   if (!msg) return;
-  input.value = '';
+  if (input) input.value = '';
 
   const msgs = document.getElementById('ai-msgs');
+  if (!msgs) return;
 
   // User bubble
-  const ud = document.createElement('div');
-  ud.className = 'ai-msg user';
-  ud.innerHTML = `<div class="ai-bub">${escHtml(msg)}</div>`;
-  msgs.appendChild(ud);
+  appendMsg(msgs, msg, 'user');
 
   // Bot typing bubble
-  const ld = document.createElement('div');
-  ld.className = 'ai-msg bot';
-  ld.innerHTML = `
-    <div class="ai-bot-hdr">
-      <div class="ai-bot-av">${botIconSvg()}</div>
-      <span class="ai-bot-name">Coach AI</span>
-    </div>
-    <div class="ai-bub">
-      <div class="dot-typing"><span></span><span></span><span></span></div>
-    </div>`;
-  msgs.appendChild(ld);
+  const botDiv = appendMsg(msgs, '', 'bot', true);
   msgs.scrollTop = msgs.scrollHeight;
 
   const system = buildSystem();
-
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model:      AI_MODEL,
-        max_tokens: 1000,
+        model: MODEL, max_tokens: 1000,
         system,
         messages: [{ role: 'user', content: msg }],
       }),
     });
-
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
     const data = await res.json();
-    const text = data.content?.[0]?.text || 'Maaf, tidak bisa menjawab sekarang.';
-    ld.querySelector('.ai-bub').innerHTML = text.replace(/\n/g, '<br>');
+    const text = data.content?.[0]?.text ?? 'Maaf, tidak bisa menjawab sekarang.';
+    const bub  = botDiv.querySelector('.ai-bub');
+    if (bub) bub.innerHTML = text.replace(/\n/g, '<br>');
   } catch (err) {
-    console.error('[sendAI]', err);
-    ld.querySelector('.ai-bub').textContent = 'Koneksi error. Coba lagi ya!';
+    const bub = botDiv.querySelector('.ai-bub');
+    if (bub) bub.textContent = 'Koneksi error. Coba lagi ya!';
   }
-
   msgs.scrollTop = msgs.scrollHeight;
 }
 
-export function aiAsk(question) {
-  document.getElementById('ai-in').value = question;
+export function aiAsk(q) {
+  const input = document.getElementById('ai-in');
+  if (input) input.value = q;
   sendAI();
 }
 
 function buildSystem() {
-  const ctx = state.healthCtx || fallbackCtx();
-  return `Kamu adalah AI Health Coach untuk aplikasi "Better Together" — aplikasi kesehatan khusus pasangan LDR bernama Ilham dan Navisa.
+  const myName = state.myUser?.name ?? 'User';
+  const ctx    = state.healthCtx || `${myName} sedang menggunakan Better Together.`;
+  return `Kamu adalah AI Health Coach untuk "Better Together" — aplikasi kesehatan untuk pasangan LDR.
 
 ${ctx}
 
-Panduan menjawab:
+Panduan:
 - Sapa dengan nama yang relevan
-- Hangat, supportif, dan tidak menghakimi
-- Maksimal 3 paragraf singkat
-- Bahasa Indonesia yang natural dan casual
-- Berikan saran yang praktis dan realistis`;
+- Hangat, supportif, tidak menghakimi
+- Maks 3 paragraf singkat dan praktis
+- Bahasa Indonesia yang natural`;
 }
 
-function fallbackCtx() {
-  return `Data (offline):
-- Ilham  : 68.7 kg, target 65 kg
-- Navisa : 55.2 kg, target 52 kg
-- Streak : ${state.streak} hari
-- Air    : ${state.waterCount}/8 gelas`;
-}
-
-function escHtml(str) {
-  return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
-}
-
-function botIconSvg() {
-  return `<svg width="13" height="13" viewBox="0 0 24 24" fill="none">
-    <rect x="3" y="11" width="18" height="10" rx="2" stroke="white" stroke-width="2"/>
-    <path d="M9 11V7a3 3 0 0 1 6 0v4" stroke="white" stroke-width="2" stroke-linecap="round"/>
-    <circle cx="9" cy="16" r="1" fill="white"/>
-    <circle cx="15" cy="16" r="1" fill="white"/>
-  </svg>`;
+function appendMsg(container, text, role, typing = false) {
+  const div = document.createElement('div');
+  div.className = `ai-msg ${role}`;
+  if (role === 'bot') {
+    div.innerHTML = `
+      <div class="ai-bot-hdr">
+        <div class="ai-av-sm">🤖</div>
+        <span class="ai-bot-name">Coach AI</span>
+      </div>
+      <div class="ai-bub">${typing
+        ? '<div class="dot-typing"><span></span><span></span><span></span></div>'
+        : text}</div>`;
+  } else {
+    div.innerHTML = `<div class="ai-bub user-bub">${text}</div>`;
+  }
+  container.appendChild(div);
+  return div;
 }
