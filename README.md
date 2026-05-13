@@ -81,7 +81,7 @@ API key sudah terisi di `.env` — tinggal tambahkan di Vercel.
 ### Langkah:
 1. Buka Vercel Dashboard → Project → **Settings → Environment Variables**
 2. Tambahkan:
-   - `OPENROUTER_API_KEY` = `sk-or-v1-your-key-here`
+   - `OPENROUTER_API_KEY` = `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`
 3. Klik **Save** → **Redeploy**
 
 ### Model yang digunakan:

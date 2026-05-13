@@ -4,22 +4,22 @@
 
 export const USERS = {
   m: {
-    id: import.meta.env.VITE_USER_M_ID || 'ilham',
+    id: 'ilham',
     name: 'Ilham',
     initial: 'I',
     email: 'ilham@couplesync.app',
-    password: import.meta.env.VITE_USER_M_PASS || 'ilham123',
+    password: 'ilham123',
     gender: 'male',
     height: 175,
     weightTarget: 65,
     colorClass: 'm',
   },
   f: {
-    id: import.meta.env.VITE_USER_F_ID || 'navisa',
+    id: 'navisa',
     name: 'Navisa',
     initial: 'N',
     email: 'navisa@couplesync.app',
-    password: import.meta.env.VITE_USER_F_PASS || 'navisa123',
+    password: 'navisa123',
     gender: 'female',
     height: 160,
     weightTarget: 52,
@@ -33,15 +33,15 @@ export const WATER_TARGET  = 8;
 export const SLEEP_TARGET  = 8;
 export const CALORIE_TARGET = 1800;
 
-// Firebase config (reads from .env / Vercel Environment Variables)
+// Firebase config (reads .env first, falls back to hardcoded)
 export const FB_CONFIG = {
-  apiKey:            import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain:        import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId:         import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket:     import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId:             import.meta.env.VITE_FIREBASE_APP_ID,
-  measurementId:     import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
+  apiKey:            import.meta.env.VITE_FIREBASE_API_KEY            || 'AIzaSyBUtoV_7JsFSqPbkfMnThv4lRFN8DdRvrY',
+  authDomain:        import.meta.env.VITE_FIREBASE_AUTH_DOMAIN        || 'couplesync-health.firebaseapp.com',
+  projectId:         import.meta.env.VITE_FIREBASE_PROJECT_ID         || 'couplesync-health',
+  storageBucket:     import.meta.env.VITE_FIREBASE_STORAGE_BUCKET     || 'couplesync-health.firebasestorage.app',
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID|| '135310192337',
+  appId:             import.meta.env.VITE_FIREBASE_APP_ID             || '1:135310192337:web:649ba80febb70c2aeb1ff0',
+  measurementId:     import.meta.env.VITE_FIREBASE_MEASUREMENT_ID     || 'G-DRB3PXM7V8',
 };
 
 export const VAPID_KEY = import.meta.env.VITE_VAPID_KEY || '';
