@@ -520,7 +520,7 @@
     <div class="prof-hero-top">
       <button class="back-btn" style="background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.25)" onclick="window.go('s-home')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><polyline points="15 18 9 12 15 6" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       <span class="prof-hero-title">Profil</span>
-      <button class="prof-setting-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="white" stroke-width="2"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" stroke="white" stroke-width="2"/></svg></button>
+      <button class="prof-setting-btn" onclick="window.go('s-settings')" title="Pengaturan"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="white" stroke-width="2"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" stroke="white" stroke-width="2"/></svg></button>
     </div>
     <div class="prof-pair">
       <div class="prof-av-wrap"><div class="prof-av f">N</div><div class="prof-av-name">Navisa</div><div class="prof-av-stat">55.2 kg · 160 cm</div></div>
@@ -561,6 +561,83 @@
     <div class="ni" onclick="window.go('s-chat')"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Chat</span></div>
     <div class="ni on" onclick="window.go('s-profile')"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="#7C3AED" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="7" r="4" stroke="#7C3AED" stroke-width="2"/></svg><span style="color:#7C3AED">Akun</span></div>
   </nav>
+</div>
+
+
+<!-- ═══ SETTINGS ══════════════════════════════════════════ -->
+<div id="s-settings" class="screen">
+  <div class="ph">
+    <button class="back-btn" onclick="window.go('s-profile')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><polyline points="15 18 9 12 15 6" stroke="#0F0A1E" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <span class="ph-title">Pengaturan</span>
+    <button class="icon-btn" onclick="window.saveSettings()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12" stroke="#7C3AED" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+  <div style="padding:16px 20px 32px;overflow-y:auto;flex:1">
+
+    <!-- User info (read-only) -->
+    <div class="card" style="padding:16px 18px;margin-bottom:12px">
+      <div class="sect">Profil Kamu</div>
+      <div style="display:flex;align-items:center;gap:14px;padding:4px 0">
+        <div id="set-av" class="prof-av m" style="width:56px;height:56px;font-size:20px;margin:0;flex-shrink:0">I</div>
+        <div>
+          <div id="set-name" style="font-size:18px;font-weight:800;color:var(--t)">Ilham</div>
+          <div style="font-size:12px;color:var(--t3);margin-top:2px">Better Together Member</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mood harian -->
+    <div class="card" style="padding:16px 18px;margin-bottom:12px">
+      <div class="sect">Mood Hari Ini</div>
+      <div id="mood-grid" class="mood-grid"></div>
+    </div>
+
+    <!-- Target harian -->
+    <div class="card" style="padding:16px 18px;margin-bottom:12px">
+      <div class="sect">Target Harian</div>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div>
+          <label class="set-lbl">🔥 Target Kalori (kkal)</label>
+          <input type="number" class="set-input" id="set-calorie" placeholder="1800" min="1000" max="4000">
+        </div>
+        <div>
+          <label class="set-lbl">💧 Target Air Minum (gelas)</label>
+          <input type="number" class="set-input" id="set-water-goal" placeholder="8" min="4" max="20">
+        </div>
+      </div>
+    </div>
+
+    <!-- Body stats -->
+    <div class="card" style="padding:16px 18px;margin-bottom:12px">
+      <div class="sect">Data Tubuh</div>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div>
+          <label class="set-lbl">⚖️ Berat Badan Sekarang (kg)</label>
+          <input type="number" class="set-input" id="set-weight" placeholder="70.0" step="0.1" min="30" max="200">
+        </div>
+        <div>
+          <label class="set-lbl">📏 Tinggi Badan (cm)</label>
+          <input type="number" class="set-input" id="set-height" placeholder="170" min="100" max="250">
+        </div>
+        <div>
+          <label class="set-lbl">🎯 Target Berat Badan (kg)</label>
+          <input type="number" class="set-input" id="set-target" placeholder="65.0" step="0.1" min="30" max="200">
+        </div>
+      </div>
+    </div>
+
+    <!-- App info -->
+    <div class="card" style="padding:16px 18px;margin-bottom:12px;background:linear-gradient(135deg,#F5F3FF,#FDF2F8)">
+      <div style="text-align:center">
+        <div style="font-size:28px;margin-bottom:8px">💜</div>
+        <div style="font-size:15px;font-weight:700;color:var(--t)">Better Together v2.0</div>
+        <div style="font-size:12px;color:var(--t3);margin-top:4px">Dibuat dengan cinta untuk Ilham & Navisa</div>
+      </div>
+    </div>
+
+    <button class="btn-primary" onclick="window.saveSettings()">Simpan Pengaturan</button>
+  </div>
 </div>
 
 <!-- Toast & Status -->

@@ -385,3 +385,25 @@ body {
 .toast { position:fixed; bottom:108px; left:50%; transform:translateX(-50%) translateY(8px); background:rgba(15,10,30,.9); color:#fff; padding:11px 22px; border-radius:999px; font-size:13px; font-weight:600; z-index:9999; opacity:0; transition:all .28s cubic-bezier(.16,1,.3,1); pointer-events:none; white-space:nowrap; backdrop-filter:blur(12px); border:1px solid rgba(255,255,255,.1); }
 .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
 #fb-bar { position:fixed; top:14px; left:50%; transform:translateX(-50%); background:rgba(15,10,30,.88); color:#fff; font-size:12px; font-weight:600; padding:8px 18px; border-radius:999px; z-index:9999; display:flex; align-items:center; gap:7px; opacity:0; transition:opacity .3s; pointer-events:none; font-family:'Inter',sans-serif; backdrop-filter:blur(12px); border:1px solid rgba(255,255,255,.1); }
+
+/* ── SETTINGS ────────────────────────────────────────────── */
+.set-lbl   { font-size:13px; font-weight:600; color:var(--t2); margin-bottom:7px; display:block; }
+.set-input {
+  width:100%; background:var(--s2); border:2px solid var(--bd); border-radius:12px;
+  padding:13px 16px; font-size:15px; font-family:'Inter',sans-serif; color:var(--t);
+  outline:none; transition:all .2s; font-weight:500;
+}
+.set-input:focus { border-color:var(--p); background:#fff; box-shadow:0 0 0 4px rgba(124,58,237,.08); }
+
+/* ── MOOD GRID ───────────────────────────────────────────── */
+.mood-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+.mood-btn {
+  background:var(--s2); border:2px solid var(--bd); border-radius:14px;
+  padding:14px 8px; cursor:pointer; text-align:center; font-family:'Inter',sans-serif;
+  transition:all .2s; display:flex; flex-direction:column; align-items:center; gap:6px;
+}
+.mood-btn:active { transform:scale(.96); }
+.mood-btn.mood-on { border-color:var(--p); background:var(--pl); }
+.mood-emoji { font-size:26px; line-height:1; display:block; }
+.mood-label { font-size:11px; font-weight:600; color:var(--t2); }
+.mood-btn.mood-on .mood-label { color:var(--p); }

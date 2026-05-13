@@ -30,8 +30,8 @@ function updateMyCards() {
   setText('hm-greet', greeting(u.name));
   setText('hm-water-val', `${d.water ?? 0}/8`);
   setText('hm-wt-me',  kg ? `${kg} kg` : '—');
-  setText('hm-streak', state.streak);
-  setText('streak-big', state.streak);
+  setText('hm-streak', state._dataLoaded ? state.streak : '—');
+  setText('streak-big', state._dataLoaded ? state.streak : '—');
 
   // Habit ring
   const total = HABITS.length;
@@ -100,9 +100,11 @@ function updatePartnerFeed() {
 }
 
 function updateStreak() {
-  setText('hm-streak', state.streak);
-  setText('streak-big', state.streak);
-  setText('prof-streak', state.streak);
+  const val = state._dataLoaded ? state.streak : '—';
+  setText('hm-streak', val);
+  setText('streak-big', val);
+  setText('prof-streak', val);
+  setText('prg-streak', val);
 }
 
 function updateAIContext() {

@@ -1,7 +1,11 @@
 // src/screens/ai.js
+// Uses /api/chat (Vercel serverless) — API key is server-side only
+
 import { state } from '../state.js';
 
-const MODEL = 'claude-sonnet-4-20250514';
+// In dev: calls Vercel function directly (needs `vercel dev` or deployed)
+// In prod: /api/chat is on same domain, no CORS issues
+const API_ENDPOINT = '/api/chat';
 
 export async function sendAI() {
   const input = document.getElementById('ai-in');
@@ -12,32 +16,45 @@ export async function sendAI() {
   const msgs = document.getElementById('ai-msgs');
   if (!msgs) return;
 
-  // User bubble
   appendMsg(msgs, msg, 'user');
-
-  // Bot typing bubble
   const botDiv = appendMsg(msgs, '', 'bot', true);
   msgs.scrollTop = msgs.scrollHeight;
 
   const system = buildSystem();
+
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
+    const res = await fetch(API_ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: MODEL, max_tokens: 1000,
         system,
+        max_tokens: 1000,
         messages: [{ role: 'user', content: msg }],
       }),
     });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+    if (!res.ok) {
+      const errData = await res.json().catch(() => ({}));
+      // Give a helpful error message based on status
+      if (res.status === 500 && errData.error?.includes('ANTHROPIC_API_KEY')) {
+        throw new Error('API key belum dikonfigurasi di Vercel. Lihat README.');
+      }
+      throw new Error(`Server error ${res.status}`);
+    }
+
     const data = await res.json();
-    const text = data.content?.[0]?.text ?? 'Maaf, tidak bisa menjawab sekarang.';
+    const text = data.content?.[0]?.text ?? 'Maaf, tidak ada respons.';
     const bub  = botDiv.querySelector('.ai-bub');
     if (bub) bub.innerHTML = text.replace(/\n/g, '<br>');
+
   } catch (err) {
+    console.error('[AI]', err);
     const bub = botDiv.querySelector('.ai-bub');
-    if (bub) bub.textContent = 'Koneksi error. Coba lagi ya!';
+    if (bub) {
+      bub.innerHTML = err.message.includes('API key')
+        ? '⚠️ AI Coach belum diaktifkan.<br><small>Tambahkan <b>ANTHROPIC_API_KEY</b> di Vercel → Settings → Environment Variables, lalu redeploy.</small>'
+        : 'Koneksi error. Coba lagi ya! 🙏';
+    }
   }
   msgs.scrollTop = msgs.scrollHeight;
 }
@@ -55,11 +72,12 @@ function buildSystem() {
 
 ${ctx}
 
-Panduan:
-- Sapa dengan nama yang relevan
+Panduan menjawab:
+- Sapa dengan nama yang relevan (${myName} atau pasangannya)
 - Hangat, supportif, tidak menghakimi
-- Maks 3 paragraf singkat dan praktis
-- Bahasa Indonesia yang natural`;
+- Maksimal 3 paragraf singkat dan praktis
+- Bahasa Indonesia yang natural dan friendly
+- Berikan saran yang realistis dan bisa langsung dilakukan`;
 }
 
 function appendMsg(container, text, role, typing = false) {

@@ -79,10 +79,12 @@ export async function loadDashboard() {
 
     if (mySnap.exists())      Object.assign(state.myData,      mySnap.data());
     if (partnerSnap.exists()) Object.assign(state.partnerData, partnerSnap.data());
-    if (coupleSnap.exists())  state.streak = coupleSnap.data().streak ?? 12;
+    if (coupleSnap.exists())  state.streak = coupleSnap.data().streak ?? 0;
 
     if (wm) state.weightHistory.m = [...state.weightHistory.m.slice(1), wm.kg];
     if (wf) state.weightHistory.f = [...state.weightHistory.f.slice(1), wf.kg];
+
+    state._dataLoaded = true;
 
     return { myData: state.myData, partnerData: state.partnerData,
              streak: state.streak, wm, wf };

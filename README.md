@@ -73,6 +73,25 @@ npm run build
 
 ---
 
+## Setup AI Coach (gratis, OpenRouter)
+
+AI Coach menggunakan [OpenRouter](https://openrouter.ai) dengan model gratis.
+API key sudah terisi di `.env` — tinggal tambahkan di Vercel.
+
+### Langkah:
+1. Buka Vercel Dashboard → Project → **Settings → Environment Variables**
+2. Tambahkan:
+   - `OPENROUTER_API_KEY` = `sk-or-v1-your-key-here`
+3. Klik **Save** → **Redeploy**
+
+### Model yang digunakan:
+- **Primary:** `google/gemini-2.0-flash-exp:free` — cepat & pintar
+- **Fallback:** `meta-llama/llama-3.1-8b-instruct:free` — kalau rate limit
+
+> ✅ Semua model pakai akhiran `:free` — 100% gratis, tidak perlu kartu kredit.
+
+---
+
 ## Setup Firebase (wajib untuk sync data)
 
 ### 1. Authentication

@@ -1,15 +1,16 @@
 // src/state.js — single source of truth
-import { USERS, WATER_TARGET } from './config.js';
+import { USERS } from './config.js';
 
 export const state = {
   // Auth
-  me: null,           // 'm' | 'f' — current logged-in user
-  partner: null,      // 'm' | 'f' — the other user
+  me: null,
+  partner: null,
+  currentPick: null,
 
-  // Today's data (synced from Firestore)
+  // Today's data (loaded from Firestore, default = empty)
   myData: {
     water: 0,
-    habits: {},       // { habitId: true/false }
+    habits: {},
     workoutDone: false,
     workoutDurationSec: 0,
     mood: null,
@@ -24,15 +25,15 @@ export const state = {
     weight: null,
   },
 
-  // Weight history (7 days, loaded from Firestore)
+  // Weight history — shown as dashes until Firestore loads
   weightHistory: {
-    m: [70.1, 69.8, 69.5, 69.3, 69.0, 68.9, 68.7],
-    f: [56.2, 56.0, 55.8, 55.6, 55.5, 55.3, 55.2],
+    m: [null, null, null, null, null, null, null],
+    f: [null, null, null, null, null, null, null],
   },
-  weightLabels: ['18/5','19/5','20/5','21/5','22/5','23/5','24/5'],
+  weightLabels: ['Sen','Sel','Rab','Kam','Jum','Sab','Min'],
 
-  // Streak
-  streak: 12,
+  // Streak — 0 until loaded from Firestore
+  streak: 0,
 
   // Workout tracking
   workoutGender: 'male',
@@ -46,16 +47,25 @@ export const state = {
   // Charts
   charts: { weight: null, progress: null },
 
-  // AI context
+  // AI context string
   healthCtx: '',
 
+  // Internal flags
+  _partnerWkNotified: false,
+  _dataLoaded: false,
+
   // Helpers
-  get myUser()      { return USERS[this.me]; },
-  get partnerUser() { return USERS[this.partner]; },
+  get myUser()      { return this.me      ? USERS[this.me]      : null; },
+  get partnerUser() { return this.partner ? USERS[this.partner] : null; },
 };
 
 export function setUser(role) {
   state.me      = role;
   state.partner = role === 'm' ? 'f' : 'm';
   state.workoutGender = USERS[role].gender;
+  state._partnerWkNotified = false;
+  // Reset today data when switching users
+  state.myData      = { water:0, habits:{}, workoutDone:false, workoutDurationSec:0, mood:null, weight:null };
+  state.partnerData = { water:0, habits:{}, workoutDone:false, workoutDurationSec:0, mood:null, weight:null };
+  state._dataLoaded = false;
 }

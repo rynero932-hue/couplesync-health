@@ -8,6 +8,7 @@ const LAZY = {
   's-workout':  () => import('../screens/workout.js').then(m => m.renderWorkoutScreen()),
   's-habits':   () => import('../screens/habits.js').then(m => m.renderHabits()),
   's-home':     () => import('../screens/home.js').then(m => m.refreshHome()),
+  's-settings': () => import('../screens/settings.js').then(m => m.renderSettings()),
 };
 
 export function go(screenId) {

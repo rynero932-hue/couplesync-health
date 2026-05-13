@@ -68,6 +68,11 @@ window.aiAsk              = aiAsk;
 // Notifications
 window.requestNotifications = requestNotifications;
 
+// Settings
+window.renderSettings = renderSettings;
+window.selectMood     = selectMood;
+window.saveSettings   = saveSettings;
+
 // ── Boot ──────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   // Default state
