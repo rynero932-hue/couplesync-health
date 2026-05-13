@@ -8,9 +8,21 @@ import { FB_CONFIG, COUPLE_ID, USERS } from '../config.js';
 import { state, setUser }              from '../state.js';
 
 // ── Init ──────────────────────────────────────────────────────────────────────
-const app  = initializeApp(FB_CONFIG);
-const auth = getAuth(app);
-const db   = getFirestore(app);
+let app, auth, db;
+
+try {
+  if (!FB_CONFIG.apiKey) {
+    throw new Error('Firebase API Key missing. Please set Environment Variables in Vercel.');
+  }
+  app  = initializeApp(FB_CONFIG);
+  auth = getAuth(app);
+  db   = getFirestore(app);
+} catch (err) {
+  console.error('[Firebase Init Error]', err.message);
+  // Fallback dummy objects to prevent crashes on reference
+  auth = { onAuthStateChanged: () => {} };
+  db   = {}; 
+}
 
 // ── Refs ──────────────────────────────────────────────────────────────────────
 export const today   = () => new Date().toISOString().split('T')[0];
